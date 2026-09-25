@@ -63,6 +63,32 @@ export async function getRecentRuns(limit = 6) {
   }));
 }
 
+export async function getAllRuns() {
+  const allRuns = await db.query.runs.findMany({
+    orderBy: [desc(runs.updatedAt), desc(runs.createdAt)],
+  });
+
+  if (allRuns.length === 0) return [];
+
+  const runIds = allRuns.map((r) => r.id);
+
+  const gameCounts = await db
+    .select({
+      runId: games.runId,
+      count: count(games.id),
+    })
+    .from(games)
+    .where(inArray(games.runId, runIds))
+    .groupBy(games.runId);
+
+  const countMap = new Map(gameCounts.map((gc) => [gc.runId, gc.count]));
+
+  return allRuns.map((run) => ({
+    ...run,
+    gamesCount: countMap.get(run.id) || 0,
+  }));
+}
+
 export async function getRunHistory(runId: string) {
   const run = await db.query.runs.findFirst({
     where: (r, { eq }) => eq(r.id, runId),

@@ -70,6 +70,45 @@ export function ScoreBoard({
 
   const [expandedPlayerId, setExpandedPlayerId] = useState<string | null>(null)
 
+  // Touch swipe handling to switch between teams
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [touchStartY, setTouchStartY] = useState<number | null>(null)
+
+  function handleTouchStart(e: React.TouchEvent) {
+    setTouchStartX(e.touches[0].clientX)
+    setTouchStartY(e.touches[0].clientY)
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX === null || touchStartY === null) return
+
+    const touchEndX = e.changedTouches[0].clientX
+    const touchEndY = e.changedTouches[0].clientY
+    const deltaX = touchEndX - touchStartX
+    const deltaY = touchEndY - touchStartY
+
+    // Require horizontal swipe of at least 40px and predominantly horizontal
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      const currentIndex = teams.findIndex((t) => t.id === activeTeamId)
+      if (currentIndex !== -1) {
+        if (deltaX < 0) {
+          // Swipe Left -> Next team (Team A -> Team B)
+          const nextIndex = (currentIndex + 1) % teams.length
+          setActiveTeamId(teams[nextIndex].id)
+          setExpandedPlayerId(null)
+        } else {
+          // Swipe Right -> Previous team (Team B -> Team A)
+          const prevIndex = (currentIndex - 1 + teams.length) % teams.length
+          setActiveTeamId(teams[prevIndex].id)
+          setExpandedPlayerId(null)
+        }
+      }
+    }
+
+    setTouchStartX(null)
+    setTouchStartY(null)
+  }
+
   // Sync unsynced events periodically and on mount
   useEffect(() => {
     syncPendingEvents(game.id)
@@ -200,10 +239,14 @@ export function ScoreBoard({
 
   return (
     <div className="flex flex-col h-svh max-h-svh overflow-hidden bg-background">
-      {/* 1. Interactive Dual-Scoreboard & Team Switcher */}
-      <div className="bg-primary text-primary-foreground select-none shrink-0 shadow-md">
+      {/* 1. Interactive Dual-Scoreboard & Team Switcher with Swipe Gesture */}
+      <div 
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="bg-primary text-primary-foreground select-none shrink-0 shadow-md touch-pan-y"
+      >
         <div className="grid grid-cols-2 divide-x divide-primary-foreground/15">
-          {teams.map((team) => {
+          {teams.map((team, idx) => {
             const isActive = team.id === activeTeam?.id
             const score = getTeamScore(team.id)
 
@@ -215,7 +258,7 @@ export function ScoreBoard({
                   setActiveTeamId(team.id)
                   setExpandedPlayerId(null)
                 }}
-                className={`flex flex-col items-center py-3.5 px-2 transition-all relative ${
+                className={`flex flex-col items-center py-3 px-2 transition-all relative ${
                   isActive
                     ? "bg-primary-foreground/15"
                     : "opacity-60 hover:opacity-90 active:bg-primary-foreground/5"
@@ -257,8 +300,8 @@ export function ScoreBoard({
             </span>
           </button>
         ) : (
-          <span className="text-xs text-muted-foreground flex items-center gap-1">
-            Tap player for stats
+          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+            <span>Swipe ⇄ to switch</span>
           </span>
         )}
 
@@ -279,9 +322,19 @@ export function ScoreBoard({
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => router.push(game.runId ? `/runs/${game.runId}` : "/")}
+            className="h-7 text-xs font-medium px-2 text-muted-foreground hover:text-foreground"
+            title="Pause game and return"
+          >
+            Pause
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleFinish}
             disabled={isPending}
-            className="h-7 text-xs font-semibold px-2"
+            className="h-7 text-xs font-semibold px-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
           >
             <CheckIcon className="size-3.5 mr-1" />
             {isPending ? "Finishing…" : "Finish"}
@@ -289,8 +342,12 @@ export function ScoreBoard({
         </div>
       </div>
 
-      {/* 3. Zero-Scroll Active Team Player Roster */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+      {/* 3. Zero-Scroll Active Team Player Roster with Swipe Gesture */}
+      <div 
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="flex-1 overflow-y-auto px-3 py-3 space-y-2 select-none touch-pan-y"
+      >
         {activeRosterPlayers.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
             No players assigned to {activeTeam?.name}.
