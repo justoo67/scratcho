@@ -7,16 +7,15 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import {
   CheckCircle2Icon,
   Share2Icon,
-  ShieldCheckIcon,
   Edit2Icon,
   CopyIcon,
   CheckIcon,
 } from "lucide-react"
 import type { Player } from "@/db/schema"
+import { PlayerStatsCard } from "./player-stats-card"
 
 interface StatItem {
   id: string
@@ -161,42 +160,14 @@ export function PlayerProfileView({ player: initialPlayer, career }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6 px-4 pt-6 pb-12">
-      {/* Player identity banner */}
-      <div className="flex flex-col items-center text-center gap-3 pt-4">
-        <div className="relative">
-          <div className="size-20 rounded-full bg-primary/10 border-2 border-border flex items-center justify-center text-2xl font-bold text-foreground">
-            {player.name[0].toUpperCase()}
-          </div>
-          {player.jerseyNumber && (
-            <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground font-mono text-xs px-1.5 py-0.5 rounded-full font-bold">
-              #{player.jerseyNumber}
-            </span>
-          )}
-        </div>
-
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{player.name}</h1>
-          {player.nickname && (
-            <p className="text-sm text-muted-foreground font-medium">
-              &quot;{player.nickname}&quot;
-            </p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {player.claimedByUserId ? (
-            <Badge variant="secondary" className="gap-1 text-xs py-0.5">
-              <ShieldCheckIcon className="size-3 text-emerald-500" />
-              Claimed Profile
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="gap-1 text-xs py-0.5 text-muted-foreground">
-              Guest Player
-            </Badge>
-          )}
-        </div>
-      </div>
+    <div className="flex flex-col gap-6 px-4 pt-4 pb-12">
+      {/* High-impact Player Stats Card */}
+      <PlayerStatsCard
+        player={player}
+        career={career}
+        backgroundImage="/basketball_court.webp"
+        priority
+      />
 
       {/* Claim Banner (Docs Section 3 & 37) */}
       {isUnclaimed && (

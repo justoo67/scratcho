@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ArrowLeftIcon, TrophyIcon, HomeIcon, FlameIcon } from "lucide-react"
+import { ArrowLeftIcon } from "lucide-react"
 import { UserAccountBadge } from "@/components/auth/user-account-badge"
 import { cn } from "@/lib/utils"
 
@@ -25,47 +25,57 @@ export function CourtNavbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
-        {/* Left: Back button + Home Brand */}
-        <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/85 backdrop-blur-md">
+      <div className="mx-auto flex h-11 max-w-md items-center justify-between px-3">
+        {/*
+          Back Button Placement & UX Rationale:
+          1. Placement: Placed at the far-left to align with standard mobile UX conventions
+             (iOS navigation bars & Android TopAppBars) where users intuitively look for backward navigation.
+          2. Compact Icon Target: Replaced the previous text badge + divider with an icon-only
+             button (size-8 touch target) to prevent horizontal crowding next to the logo and account badge
+             on narrow screens (~360px mobile viewports).
+          3. Proximity to Logo: Placing the back button directly next to the 'Scratcho' home link creates
+             minor navigational redundancy since both lead backward/home on shallow stacks. For deeper pages
+             (e.g., /runs/[id] or /games/new), it acts as a true step-back, while the logo remains the global home anchor.
+          4. Courtside Ergonomics: The top-left corner is outside the primary one-handed thumb zone,
+             which reduces accidental triggers during rapid stat-keeping sessions.
+        */}
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={handleBack}
             aria-label="Go back"
-            className="flex items-center gap-1 -ml-1.5 px-2 py-1.5 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/60 active:bg-muted transition-colors"
+            title="Go back"
+            className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground active:scale-95"
           >
             <ArrowLeftIcon className="size-4 shrink-0" />
-            <span>Back</span>
+            <span className="sr-only">Go back</span>
           </button>
-
-          <div className="h-4 w-px bg-border/60 mx-0.5" />
 
           <Link
             href="/"
-            className="flex items-center gap-1.5 font-bold tracking-tight text-foreground text-sm hover:opacity-85 transition-opacity"
+            className="flex items-center gap-1.5 text-xs font-bold tracking-tight text-foreground transition-opacity hover:opacity-85"
             title="Go to Scratcho Home"
           >
-            <span className="bg-primary text-primary-foreground text-[10px] font-black size-5 rounded-md flex items-center justify-center">
+            <span className="flex size-5 items-center justify-center rounded-md bg-primary text-[10px] font-black text-primary-foreground shadow-xs">
               S
             </span>
-            <span>Scratcho</span>
+            <span className="tracking-tight">Scratcho</span>
           </Link>
         </div>
 
-        {/* Right: Quick Links & Account */}
-        <div className="flex items-center gap-2">
+        {/* Right: Navigation Link & User Account Badge */}
+        <div className="flex items-center gap-1.5">
           <Link
             href="/runs"
             className={cn(
-              "text-xs font-medium px-2.5 py-1 rounded-md transition-colors flex items-center gap-1",
+              "px-2.5 py-1 text-xs font-medium rounded-md transition-colors",
               pathname === "/runs"
                 ? "bg-primary/10 text-primary font-semibold"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
-            <FlameIcon className="size-3 text-primary" />
-            <span>Runs</span>
+            Runs
           </Link>
 
           <UserAccountBadge />
@@ -74,3 +84,4 @@ export function CourtNavbar() {
     </header>
   )
 }
+
