@@ -14,6 +14,8 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://*.devtunnels.ms",
+    "https://scratcho.vercel.app",
+    "https://*.vercel.app",
   ],
   emailAndPassword: {
     enabled: true,

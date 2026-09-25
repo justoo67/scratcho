@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
         "*.devtunnels.ms",
         "*.uks1.devtunnels.ms",
         "h79j7x5m-3000.uks1.devtunnels.ms",
+        "scratcho.vercel.app",
+        "*.vercel.app",
       ],
     },
   },
