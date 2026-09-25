@@ -90,22 +90,30 @@ export function GameResult({
               </h2>
               <div className="flex flex-col gap-2">
                 {teamPlayers.map((player) => (
-                  <div
+                  <Link
                     key={player.id}
-                    className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5"
+                    href={`/players/${player.id}`}
+                    className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2.5 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <div className="size-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold">
                         {player.name[0].toUpperCase()}
                       </div>
-                      <p className="text-sm font-medium">{player.name}</p>
+                      <div>
+                        <p className="text-sm font-medium leading-tight">{player.name}</p>
+                        {!player.claimedByUserId && (
+                          <span className="text-[10px] text-primary font-medium">
+                            Claim profile →
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground font-mono">
                       {statDefinitions
                         .map((s) => `${getTotal(player.id, s.id)} ${s.code}`)
                         .join(" · ")}
                     </p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>

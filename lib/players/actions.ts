@@ -1,5 +1,6 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { players } from "@/db/schema";
 import { ulid } from "@/lib/ulid";
@@ -14,6 +15,9 @@ export async function createPlayer(input: CreatePlayerInput) {
 
   const [player] = await db
     .insert(players)
+    .values({ id, ...parsed })
+    .returning();
+
   return player;
 }
 
@@ -68,4 +72,60 @@ export async function updatePlayerProfile(
     .returning();
 
   return updated;
+}
+
+export async function getPlayerStats(playerId: string) {
+  const { gamePlayers, statEvents, statDefinitions } = await import("@/db/schema");
+  const { and, countDistinct, sum } = await import("drizzle-orm");
+
+  const [gamesCount] = await db
+    .select({ count: countDistinct(gamePlayers.gameId) })
+    .from(gamePlayers)
+    .where(eq(gamePlayers.playerId, playerId));
+
+  const totalGames = Number(gamesCount?.count || 0);
+
+  const totals = await db
+    .select({
+      statId: statEvents.statId,
+      total: sum(statEvents.value).mapWith(Number),
+    })
+    .from(statEvents)
+    .where(
+      and(eq(statEvents.playerId, playerId), eq(statEvents.voided, false))
+    )
+    .groupBy(statEvents.statId);
+
+  const defs = await db.query.statDefinitions.findMany({
+    orderBy: (d, { asc }) => [asc(d.sortOrder)],
+  });
+
+  const stats = defs.map((d) => {
+    const statTotal = totals.find((t) => t.statId === d.id)?.total || 0;
+    const perGame = totalGames > 0 ? (statTotal / totalGames).toFixed(1) : "0.0";
+    return {
+      id: d.id,
+      code: d.code,
+      name: d.name,
+      total: statTotal,
+      perGame,
+      label:
+        d.code === "PTS"
+          ? "PPG"
+          : d.code === "REB"
+          ? "RPG"
+          : d.code === "AST"
+          ? "APG"
+          : d.code === "STL"
+          ? "SPG"
+          : d.code === "BLK"
+          ? "BPG"
+          : `${d.code}/G`,
+    };
+  });
+
+  return {
+    totalGames,
+    stats,
+  };
 }

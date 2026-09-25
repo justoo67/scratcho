@@ -3,6 +3,8 @@ import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+import { UserAccountBadge } from "@/components/auth/user-account-badge"
+
 export default function Home() {
   return (
     <div className="relative mx-auto flex min-h-svh max-w-md flex-col overflow-hidden">
@@ -18,6 +20,11 @@ export default function Home() {
 
       {/* Dark gradient scrim — bottom-heavy so text is legible */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
+
+      {/* Top Header: Fast Auth */}
+      <div className="relative z-10 flex justify-end px-5 pt-8">
+        <UserAccountBadge />
+      </div>
 
       {/* Content pinned to bottom */}
       <div className="relative mt-auto flex flex-col gap-6 px-6 pb-14 pt-24">
