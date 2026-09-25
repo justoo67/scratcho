@@ -64,7 +64,7 @@ export function CourtNavbar() {
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
-            <FlameIcon className="size-3 text-amber-500" />
+            <FlameIcon className="size-3 text-primary" />
             <span>Runs</span>
           </Link>
 
