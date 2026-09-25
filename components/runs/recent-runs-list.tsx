@@ -61,8 +61,8 @@ export function RecentRunsList({ initialRuns }: Props) {
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between px-0.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70 flex items-center gap-1.5">
-          <FlameIcon className="size-3.5 text-amber-400" />
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+          <FlameIcon className="size-3.5 text-[#18FF9A]" />
           <span>Recent Runs</span>
         </span>
         <span className="text-[10px] text-white/50">
@@ -76,11 +76,11 @@ export function RecentRunsList({ initialRuns }: Props) {
             key={run.id}
             href={`/runs/${run.id}`}
             className={cn(
-              "group flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md transition-all active:scale-[0.99] hover:bg-white/15 hover:border-white/25"
+              "group flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-[#0B132B]/60 p-3.5 backdrop-blur-md transition-all active:scale-[0.99] hover:bg-[#0B132B]/85 hover:border-[#146CFF]/60 shadow-md"
             )}
           >
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold text-white truncate group-hover:text-white">
+              <span className="text-sm font-semibold text-white truncate group-hover:text-[#18FF9A] transition-colors">
                 {run.name}
               </span>
               <div className="flex items-center gap-2 mt-0.5 text-xs text-white/60">
@@ -99,9 +99,9 @@ export function RecentRunsList({ initialRuns }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center gap-1 text-xs font-medium text-white/70 group-hover:text-white shrink-0">
+            <div className="flex items-center gap-1 text-xs font-semibold text-[#18FF9A] group-hover:translate-x-0.5 transition-all shrink-0">
               <span>View</span>
-              <ChevronRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+              <ChevronRightIcon className="size-4" />
             </div>
           </Link>
         ))}
